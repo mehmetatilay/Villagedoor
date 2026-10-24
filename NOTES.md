@@ -11,6 +11,7 @@ Kaynak kod: GitHub `mehmetatilay/Villagedoor` (ana dal `main`). Oynanan sürüm:
 | `css/style.css` | Tüm stiller. Renk ve yazı tipleri `:root` içinde. Tek koyu tema (bilerek). |
 | `js/config.js` | Sabitler: meslekler, bina maliyetleri (`BSPEC`), emirler (`ORD`), geliştirmeler (`TECH`), seviyeler (`HLV`, `FLV`). Ortak durum değişkenleri (`G`, kamera). |
 | `js/world.js` | Harita üretimi, zemin çizimi, kamera dönüşümleri, `newGame`, `freshMeta`. |
+| `js/town.js` | Yollar (aşınma → patika → toprak yol) ve mahalleler: kuruluş, ev arsası seçimi, yol çizimi. |
 | `js/save.js` | `localStorage` kaydı (`koy-kapisi-kayit-v1`), yükleme ve eski kayıtlarla uyum. |
 | `js/villagers.js` | Köylü davranışları: toplama, fidan dikme, araştırma, tarım, inşaat, güçlendirme, av, savaş. Emir sistemi (`order()`). |
 | `js/enemies.js` | Kurt/akıncı dalgaları, hedef seçimi, hasar. |
@@ -20,7 +21,7 @@ Kaynak kod: GitHub `mehmetatilay/Villagedoor` (ana dal `main`). Oynanan sürüm:
 | `js/input.js` | Sürükleme, iki parmakla yakınlaştırma, haritaya dokunma. |
 | `js/main.js` | Düğmeler, duraklat menüsü, açılış, ana döngü, otomatik kayıt. |
 | `tests/sim.js` | Başsız 10 dk simülasyon + kaydet/yükle testi: `node tests/sim.js --save` |
-| `tests/ui.js` | Chromium'da tıklama testi ve ekran görüntüleri: `NODE_PATH=/opt/npm-tools/node_modules node tests/ui.js` |
+| `tests/ui.js` | Chromium'da tıklama testi ve ekran görüntüleri: `node tests/ui.js` (önce `node tests/sim.js --save`) |
 
 Scriptler sıradan (modül olmayan) script; üst düzey `const`/`let` dosyalar arasında paylaşılır. Yükleme sırası önemli.
 
@@ -78,7 +79,7 @@ Mahalleye dokununca açılır, iki bölüm:
 - Gece–gündüz: akşam herkes evine döner, sokaklar boşalır.
 
 ### Yol haritası
-1. **Düzen:** yollar/patikalar, yola dizilen evler, ilk mahalle (sadece barınma). Rastgele yerleşim kalkar.
+1. **Düzen:** yollar/patikalar, yola dizilen evler, ilk mahalle (sadece barınma). Rastgele yerleşim kalkar. ✅ Yapıldı (bkz. "Yollar ve mahalleler").
 2. **Yaşayan sokaklar:** sivil yürüyüşçüler, çocuklar, gece–gündüz.
 3. **Mahalleler ve ihtiyaçlar:** mahalle kartı (bina + çalışan), basamaklar, market/kuyu/okul, yeni mahalle açılması.
 4. **Aşamalar:** ana binanın büyümesi, aşamayla açılan meslekler, mahalle mimarı.
@@ -104,6 +105,14 @@ Mahalleye dokununca açılır, iki bölüm:
 | Asker | Kışla (30 odun, 20 taş) | Nöbet tut · Talim yap · Avlan |
 
 Geliştirmeler çalışan sayısı × süre ile ilerler: Testere 200/400, Kazma 160/320, Saban 160/320, Talim 120/240/360. Her seviye %40 hız (talimde %25 güç).
+
+### Yollar ve mahalleler
+- Köylünün bastığı kare aşınır. 12 sn yürünen kare **patika**, 70 sn yürünen **toprak yol** olur. Patikada %12, yolda %30 daha hızlı yürünür. Patika ve yol kalıcı; patikaya dönmemiş aşınma yavaşça silinir.
+- Oyun başında ilk mahalle (Çeşme Mahallesi) kurulur: ana binadan 8–16 kare uzakta en boş yer. Alandaki ağaç ve kayalar temizlenir, ana binaya patika açılır, ortasında küçük bir meydan olur.
+- Mahalle yarıçapı 5,5 kare, en çok **6 ev**. Evler yalnız mahallede, yola bakan arsaya yapılır (kapı yola dönük). Mahalle dolunca ya da yer kalmayınca yeni mahalle açılır (Yukarı, Bayır, Aşağı…).
+- Her yeni binadan en yakın yola patika açılır (planlı sokak). Planlı sokağa ve toprak yola bina yapılmaz; kendiliğinden oluşan patikanın üstüne yapılabilir.
+- Tarla, meslek binası ve kule mahalle alanına yapılmaz; fidan da dikilmez.
+- Yollardan önceki kayıtlar yüklenince evler tek mahallede toplanır ve binalara patika açılır.
 
 ### Binalar
 

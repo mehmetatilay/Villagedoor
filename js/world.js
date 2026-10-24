@@ -8,14 +8,14 @@ function makeNoise(cell,R=Math.random){
     const a=g[iy*gw+ix],b=g[iy*gw+ix+1],c=g[(iy+1)*gw+ix],d=g[(iy+1)*gw+ix+1];
     return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;};
 }
-function markOcc(x,y,w,h,v){for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)if(inMap(xx,yy))G.occ[yy*N+xx]=v;}
+function markOcc(x,y,w,h,v){for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)if(inMap(xx,yy)){const i=yy*N+xx;G.occ[i]=v;if(v===3){G.road[i]=0;G.wear[i]=0;G.keep[i]=0;}}}
 function areaFree(x,y,w,h){for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++){if(!inMap(xx,yy)||xx<1||yy<1||xx>N-2||yy>N-2||G.occ[yy*N+xx])return false;}return true;}
 function findSpot(w,h,minR,maxR,cx=CX,cy=CY){
   for(let i=0;i<500;i++){
     const r=minR+(maxR-minR)*(i/500)+Math.random()*1.5,a=Math.random()*Math.PI*2;
     const x=Math.round(cx+Math.cos(a)*r-w/2),y=Math.round(cy+Math.sin(a)*r-h/2);
-    if(Math.hypot(x+w/2-CX,y+h/2-CY)<3.6)continue;
-    if(areaFree(x-1,y-1,w+2,h+2))return{x,y};
+    if(Math.hypot(x+w/2-CX,y+h/2-CY)<3.6||inDistrict(x+w/2,y+h/2,1.5))continue;
+    if(areaFree(x-1,y-1,w+2,h+2)&&footRoadFree(x,y,w,h))return{x,y};
   }
   return null;
 }
@@ -26,18 +26,19 @@ function cluster(a,r,count,fn,spread){
   for(let i=0;i<count*4&&count>0;i++){const x=Math.floor(cx+(Math.random()-.5)*2*spread),y=Math.floor(cy+(Math.random()-.5)*2*spread);
     if(inMap(x,y)&&!G.occ[y*N+x]&&Math.hypot(x+.5-CX,y+.5-CY)>5.5){fn(x,y);count--;}}
 }
-function mkB(type,x,y,built){
+function mkB(type,x,y,built,door){
   const s=BSPEC[type];
-  const b={type,x,y,w:s.w,h:s.h,maxHp:s.hp,hp:built?s.hp:s.hp*.3,built,progress:built?1:0,need:s.time,workers:[],dead:false,hitT:0,level:1,age:0};
+  const b={type,x,y,door:door||'r',w:s.w,h:s.h,maxHp:s.hp,hp:built?s.hp:s.hp*.3,built,progress:built?1:0,need:s.time,workers:[],dead:false,hitT:0,level:1,age:0};
   markOcc(x,y,b.w,b.h,3);return b;
 }
 function newGame(){
   uid=0;
   G={seed:(Math.random()*4294967295)>>>0,t:0,res:{food:60,wood:40,stone:15},queue:10,vill:[],foes:[],trees:[],rocks:[],blds:[],job:null,spawnT:SPAWN,birthT:9,
-     wave:0,waveT:120,over:false,needFarm:false,needFarmPrev:false,floaters:[],occ:new Uint8Array(N*N),kills:0,maxPop:10,hints:{},names:NAMES.slice().sort(()=>Math.random()-.5),...freshMeta()};
+     wave:0,waveT:120,over:false,needFarm:false,needFarmPrev:false,floaters:[],occ:new Uint8Array(N*N),road:new Uint8Array(N*N),keep:new Uint8Array(N*N),wear:new Float32Array(N*N),mah:[],kills:0,maxPop:10,hints:{},names:NAMES.slice().sort(()=>Math.random()-.5),...freshMeta()};
   const main={type:'main',...MAIN,hp:600,maxHp:600,built:true,progress:1,workers:[],dead:false,hitT:0};
   G.blds.push(main);G.main=main;markOcc(MAIN.x,MAIN.y,MAIN.w,MAIN.h,3);
   markOcc(MAIN.x+MAIN.w,MAIN.y+1,5,2,4); // kapı önü ve sıra alanı
+  doorYard();
   const n1=makeNoise(6),n2=makeNoise(5);
   for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){
     if(G.occ[y*N+x])continue;
@@ -48,7 +49,8 @@ function newGame(){
   const a=Math.random()*Math.PI*2;
   cluster(a,8.5,14,addTree,2.3);
   cluster(a+Math.PI*.95,9.5,9,addRock,1.7);
-  for(let i=0;i<2;i++){const s=findSpot(2,2,3.6,7);if(s)G.blds.push(mkB('farm',s.x,s.y,true));}
+  foundDistrict();
+  for(let i=0;i<2;i++){const s=findSpot(2,2,3.6,8);if(s){const b=mkB('farm',s.x,s.y,true);G.blds.push(b);const f=doorTile(b);linkToRoad(f.x,f.y);}}
   ground=buildGround();
   Z=W<600?0.95:1.15;centerOn(CX+1,CY+1);
   closeSheet();

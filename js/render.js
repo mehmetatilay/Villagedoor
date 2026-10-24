@@ -56,8 +56,9 @@ function drawHouse(b){
     quadOnFace(faceL,b,.2,.4,25,33,'#2b221c');quadOnFace(faceL,b,.23,.37,26,32,'#e6b25a');
     quadOnFace(faceL,b,.6,.8,25,33,'#2b221c');quadOnFace(faceL,b,.63,.77,26,32,'#e6b25a');
     quadOnFace(faceR,b,.25,.45,25,33,'#2b221c');quadOnFace(faceR,b,.28,.42,26,32,'#e6b25a');}
-  quadOnFace(faceR,b,.42,.66,0,14,'#4a301c');
-  quadOnFace(faceL,b,.35,.62,9,16,'#2b221c');quadOnFace(faceL,b,.38,.59,10,15,'#e6b25a');
+  const fd=b.door==='l'?faceL:faceR,fw=b.door==='l'?faceR:faceL;
+  quadOnFace(fd,b,.42,.66,0,14,'#4a301c');
+  quadOnFace(fw,b,.35,.62,9,16,'#2b221c');quadOnFace(fw,b,.38,.59,10,15,'#e6b25a');
   ctx.strokeStyle='rgba(80,55,30,.5)';ctx.lineWidth=Math.max(1,Z);
   let a=faceL(b,0,0),c=faceL(b,0,Hh);ln(a[0],a[1],c[0],c[1]);a=faceR(b,1,0);c=faceR(b,1,Hh);ln(a[0],a[1],c[0],c[1]);
   const rc=[['#553621','#6e4629','#8a5a33'],['#5e2c1e','#7c3a26','#9a4a30'],['#5a2420','#7a302a','#9c3e34']][lv-1];
@@ -216,6 +217,7 @@ function render(){
   ctx.fillStyle='#101713';ctx.fillRect(0,0,W,H);
   if(!G)return;
   ctx.drawImage(ground,cam.x-OX*Z,cam.y,ground.width*Z,ground.height*Z);
+  drawRoads();
   for(const b of G.blds)if(b.type==='farm')drawFarm(b);
   // selection ring
   const ringT=sheetRef&&!sheetRef.dead?sheetRef:(trayJob?guild(trayJob):null);
@@ -239,6 +241,7 @@ function render(){
   if(G.job&&G.queue>0){const p=w2s(DOOR.x,DOOR.y),cy=p.y-34*Z,r=7*Z+2,fr=1-G.spawnT/SPAWN;
     circ(p.x,cy,r+2.5,'rgba(12,16,14,.75)');ctx.strokeStyle=JOBS[G.job].renk;ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,cy,r,-Math.PI/2,-Math.PI/2+fr*Math.PI*2);ctx.stroke();}
   ctx.strokeStyle='#f3e3b0';ctx.lineWidth=2;for(const sh of G.shots){const a=P(sh.x,sh.y,58),e=w2s(sh.ex,sh.ey),k=sh.t/.25;ctx.globalAlpha=1-k;ln(a[0],a[1],a[0]+(e.x-a[0])*Math.min(1,k*2+.3),a[1]+(e.y-12*Z-a[1])*Math.min(1,k*2+.3));}ctx.globalAlpha=1;
+  drawDistrictNames();
   for(const f of G.floaters){const p=w2s(f.x,f.y);ctx.globalAlpha=clamp(1.6-f.t,0,1);label(f.txt,p.x,p.y-40*Z-f.t*26,f.col,13);ctx.globalAlpha=1;}
   // offscreen enemy markers
   const m=26,top=104,bot=H-DOCKH-(trayJob?0:14)-12;

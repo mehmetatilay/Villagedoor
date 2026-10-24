@@ -19,7 +19,7 @@ function openVill(v){
 function openBld(b){
   sheetKind='bld';sheetRef=b;
   const name=BNAME[b.type];
-  sheet.innerHTML=`<div class="sh-head"><div><div class="eyebrow">${b.built?'Bina':'İnşaat'}</div><h2>${name}</h2></div><button class="x" type="button" data-close>Kapat</button></div>
+  sheet.innerHTML=`<div class="sh-head"><div><div class="eyebrow">${mahOf(b)?mahOf(b).name+' · ':''}${b.built?'Bina':'İnşaat'}</div><h2>${name}</h2></div><button class="x" type="button" data-close>Kapat</button></div>
   <div class="hp"><i id="bHp"></i></div><div class="meta"><span id="bHpT"></span><span id="bLv"></span></div><p class="note" id="bNote"></p>`;
   showSheet();
 }

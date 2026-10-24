@@ -7,7 +7,7 @@ function hint(key,msg,cool,kind){if(G.t>=(G.hints[key]??-1)){G.hints[key]=G.t+co
 function moveTo(e,tx,ty,dt,sp){
   const dx=tx-e.x,dy=ty-e.y,d=Math.hypot(dx,dy);
   if(d<.06)return true;
-  const st=Math.min(d,sp*dt);e.x+=dx/d*st;e.y+=dy/d*st;e.walk=(e.walk||0)+dt;e.moving=true;
+  const st=Math.min(d,sp*(e.job?roadMul(e.x,e.y):1)*dt);e.x+=dx/d*st;e.y+=dy/d*st;e.walk=(e.walk||0)+dt;e.moving=true;
   const sx=dx-dy;if(Math.abs(sx)>.01)e.face=sx>0?1:-1;
   return false;
 }
@@ -79,7 +79,7 @@ function plant(v,dt){
     if(v.carry>0){v.state='return';return;}
     let spot=null;
     for(let i=0;i<90&&!spot;i++){const a=Math.random()*Math.PI*2,r=1.8+Math.random()*5.5;const x=Math.floor(k.x+1+Math.cos(a)*r),y=Math.floor(k.y+1+Math.sin(a)*r);
-      if(x<1||y<1||x>N-2||y>N-2||G.occ[y*N+x])continue;if(Math.hypot(x+.5-CX,y+.5-CY)<5.5)continue;spot={x,y};}
+      if(x<1||y<1||x>N-2||y>N-2||G.occ[y*N+x]||G.road[y*N+x])continue;if(Math.hypot(x+.5-CX,y+.5-CY)<5.5||inDistrict(x+.5,y+.5,.5))continue;spot={x,y};}
     if(!spot){goIdle(v,'Kampın çevresinde fidan dikecek boş yer yok',4);return;}
     G.occ[spot.y*N+spot.x]=5;v.pt=spot;v.state='go';
   }
@@ -119,12 +119,14 @@ function farmer(v,dt,till){
 function createSite(type){
   const sp=BSPEC[type];if(G.res.wood<sp.wood||G.res.stone<sp.stone)return null;
   let s=null;
-  if(type==='kamp'){const t=nearest(G.trees.filter(t=>t.sap==null),CX,CY,18);if(t)s=findSpot(2,2,1,5,t.x,t.y);}
+  if(type==='house'){s=houseSite();if(!s)return null;}
+  else if(type==='kamp'){const t=nearest(G.trees.filter(t=>t.sap==null),CX,CY,18);if(t)s=findSpot(2,2,1,5,t.x,t.y);}
   else if(type==='ocak'){const r=nearest(G.rocks,CX,CY,18);if(r)s=findSpot(2,2,1,5,r.x,r.y);}
   if(!s)s=findSpot(sp.w,sp.h,type==='farm'?3.6:type==='tower'?4:4.2,15);
   if(!s)return null;
   G.res.wood-=sp.wood;G.res.stone-=sp.stone;
-  const b=mkB(type,s.x,s.y,false);G.blds.push(b);return b;
+  const b=mkB(type,s.x,s.y,false,s.door);if(s.m)b.m=s.m.id;G.blds.push(b);
+  const f=doorTile(b);linkToRoad(f.x,f.y);return b;
 }
 function engineer(v,dt){
   if(v.state==='idle'){wander(v,dt);return;}

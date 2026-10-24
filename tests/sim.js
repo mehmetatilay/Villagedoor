@@ -3,7 +3,7 @@
 // Oyunu tarayıcı olmadan yükler, ~10 dakikalık bir oyun oynatır, kayıt/yükleme ve arayüz fonksiyonlarını dener.
 const fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..');
-const ORDER = ['config', 'world', 'save', 'villagers', 'enemies', 'update', 'render', 'ui', 'input', 'main'];
+const ORDER = ['config', 'world', 'town', 'save', 'villagers', 'enemies', 'update', 'render', 'ui', 'input', 'main'];
 
 const noop = () => {};
 const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : noop), set: (t, k, v) => { t[k] = v; return true; } });
@@ -67,12 +67,21 @@ check(['kamp', 'ocak', 'ciftlik', 'kisla'].every(has), 'dört meslek binası yap
 check(g.tech.testere >= 1, `testere gelişti (seviye ${g.tech.testere})`);
 check(g.blds.filter(b => b.type === 'house').length >= 3, 'evler yapıldı');
 check(g.vill.length + g.queue > 10, `nüfus arttı (${g.vill.length + g.queue})`);
+const roads = s => g.road.reduce((n, r) => n + (r >= s ? 1 : 0), 0);
+check(roads(1) > 40, `patikalar oluştu (${roads(1)} kare)`);
+check(roads(2) > 5, `toprak yollar oluştu (${roads(2)} kare)`);
+const houses = g.blds.filter(b => b.type === 'house');
+check(g.mah.length >= 1 && houses.every(b => { const m = g.mah.find(q => q.id === b.m); return m && Math.hypot(b.x + 1 - m.x, b.y + 1 - m.y) <= 5.6; }),
+  `evler mahallelerde (${g.mah.map(m => m.name).join(', ')})`);
+const touches = b => { const at = (x, y) => g.road[y * 48 + x] > 0; for (let k = -1; k <= b.w; k++) if (at(b.x + k, b.y - 1) || at(b.x + k, b.y + b.h)) return true;
+  for (let k = 0; k < b.h; k++) if (at(b.x - 1, b.y + k) || at(b.x + b.w, b.y + k)) return true; return false; };
+check(g.blds.filter(b => b.type !== 'main').every(touches), 'her bina bir yola bitişik');
 
 H.saveGame();
-const snap = JSON.stringify({ r: g.res, b: g.blds.length, t: g.trees.length, v: g.vill.length, o: g.orders, tech: g.tech });
+const snap = JSON.stringify({ r: g.res, b: g.blds.length, t: g.trees.length, v: g.vill.length, o: g.orders, tech: g.tech, road: roads(1) + '/' + roads(2), mah: g.mah.length });
 H.loadGame(H.readSave());
 const g2 = G();
-check(JSON.stringify({ r: g2.res, b: g2.blds.length, t: g2.trees.length, v: g2.vill.length, o: g2.orders, tech: g2.tech }) === snap, 'kaydet ve yükle aynı köyü veriyor');
+check(JSON.stringify({ r: g2.res, b: g2.blds.length, t: g2.trees.length, v: g2.vill.length, o: g2.orders, tech: g2.tech, road: g2.road.reduce((n, r) => n + (r >= 1 ? 1 : 0), 0) + '/' + g2.road.reduce((n, r) => n + (r >= 2 ? 1 : 0), 0), mah: g2.mah.length }) === snap, 'kaydet ve yükle aynı köyü veriyor');
 try { step(30); check(true, 'yükledikten sonra 30 sn sorunsuz'); } catch (e) { check(false, 'yükleme sonrası hata: ' + e.message); }
 
 if (process.argv.includes('--save')) fs.writeFileSync(path.join(__dirname, 'ornek-kayit.json'), store['koy-kapisi-kayit-v1']);

@@ -12,7 +12,8 @@ function update(dt){
 
   G.needFarmPrev=G.needFarm;G.needFarm=false;
   let si=0;for(const v of G.vill)if(v.job==='asker'&&v.state!=='recall')v.sidx=si++;G._sold=si;
-  for(const v of G.vill)updateV(v,dt);
+  for(const v of G.vill){updateV(v,dt);if(v.moving)wearStep(v,dt);}
+  fadeWear(dt);
   for(const e of G.foes)updateE(e,dt);
   G.vill=G.vill.filter(v=>!v.dead&&!v.gone);
   G.foes=G.foes.filter(e=>!e.dead);

@@ -29,7 +29,21 @@ fs.mkdirSync(OUT, { recursive: true });
   await p.screenshot({ path: path.join(OUT, '2-oduncu.png') });
   await p.click('[data-ordb="muhendis"]'); await p.waitForTimeout(300);
   await p.screenshot({ path: path.join(OUT, '3-muhendis.png') });
-  await p.mouse.click(195, 300); await p.waitForTimeout(200);
+  // haritada (tepsinin ve bildirim alanının dışında) bina ve köylü olmayan bir nokta bul, oraya dokun
+  const spot = await p.evaluate(() => {
+    centerOn(6, 6); cam.y -= 160; // haritanın köşesi tepsinin üstüne gelsin; köşede bina yok denecek kadar az
+    const top = document.getElementById('tray').getBoundingClientRect().top - 10;
+    for (let sy = 170; sy < top; sy += 15) for (let sx = 30; sx < 360; sx += 15) {
+      const w = s2w(sx, sy);
+      let ok = document.elementFromPoint(sx, sy) === cv && inMap(Math.floor(w.x), Math.floor(w.y));
+      // binalara çatıları da dahil dokunulur: noktanın altındaki 80 px de boş olmalı
+      for (let off = 0; ok && off <= 80 * Z; off += 6) { const q = s2w(sx, sy + off), tx = Math.floor(q.x), ty = Math.floor(q.y);
+        for (let dy = -1; ok && dy <= 1; dy++) for (let dx = -1; ok && dx <= 1; dx++) if (inMap(tx + dx, ty + dy) && G.occ[(ty + dy) * N + tx + dx] === 3) ok = false; }
+      if (ok && !G.vill.some(v => Math.hypot(v.x - w.x, v.y - w.y) < 3)) return { x: sx, y: sy };
+    }
+    return { x: 195, y: 300 };
+  });
+  await p.mouse.click(spot.x, spot.y); await p.waitForTimeout(200);
   const closed = await p.evaluate(() => document.getElementById('tray').hidden);
   await p.click('#bPause'); await p.waitForTimeout(200);
   await p.screenshot({ path: path.join(OUT, '4-menu.png') });
