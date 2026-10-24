@@ -1,7 +1,7 @@
 # Köy Kapısı — proje notları
 
 Telefonda dikey oynanan, izometrik, tek kişilik köy stratejisi. Saf HTML/CSS/JS, kütüphane yok.
-Asıl kopya yayınlanan oyunun kendisidir (çok dosyalı Artifact). Yeni bir oturumda bu dosyaları oradan geri okuyup devam et.
+Kaynak kod: GitHub `mehmetatilay/Villagedoor` (ana dal `main`). Oynanan sürüm: çok dosyalı Artifact "Köy Kapısı"; her değişiklikte depo ve Artifact birlikte güncellenir.
 
 ## Dosyalar
 
