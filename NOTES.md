@@ -24,7 +24,68 @@ Kaynak kod: GitHub `mehmetatilay/Villagedoor` (ana dal `main`). Oynanan sürüm:
 
 Scriptler sıradan (modül olmayan) script; üst düzey `const`/`let` dosyalar arasında paylaşılır. Yükleme sırası önemli.
 
-## Oyun kuralları (şu anki)
+## Yeni vizyon: köyden şehre (2026-10-24'te kararlaştırıldı)
+
+Oyun bir köy savaş oyunundan **yaşayan bir şehir kurma oyununa** dönüşüyor: Caesar 3'teki gibi canlı sokaklar, Age of Empires'ın savaşsız hali, durmadan ama **yavaş** gelişen bir yerleşim. Oyuncu bina yerleştirmez; köyün muhtarıdır (sonra valisi), kararları mesleklere ve mahallelere verir.
+
+### Tempo
+- Obadan şehre kabaca **5 saatlik** oyun. Kayıt sistemi sayesinde birkaç oturumda oynanır. Gerekirse oyun hızlandırılır.
+
+### Yerleşim aşamaları
+Ana bina köyle birlikte büyür. Aşama atlamak kendiliğinden olmaz; mühendis ve mimarların malzeme ve zamanla yaptığı büyük bir projedir.
+
+| Aşama | Ana bina | Kabaca nüfus |
+|---|---|---|
+| Oba | Muhtar kulübesi | 10–30 |
+| Köy | Muhtarlık | 30–80 |
+| Kasaba | Belediye konağı | 80–200 |
+| İlçe | Hükümet konağı | 200–500 |
+| Şehir | Valilik | 500+ |
+
+### Önce düzen
+- **Sokaklar kendiliğinden oluşur:** sık yürünen yerde çimen ezilip patika olur, patika toprak yola, mimarın olduğu yerde taş yola döner. Başta ilkel ve loş ama gelişigüzel değil.
+- **Evler yola bakar:** rastgele boş kare yok, evler yol kenarındaki arsalara dizilir.
+- **Mahalleler öbek öbek:** her mahalle kabaca 50 kişilik. Dolunca başka bir yerde yeni mahalle açılır ve yolla bağlanır. Mahalle kulübe kümesinden siteye kadar kendi içinde gelişir.
+
+### Mahalle ihtiyaç basamakları
+Mahalle bunları sırayla çıkar. Bir basamak karşılanınca sonrakinin binaları mahalle kartında açılır. Oyuncuya soru sorulmaz: neyin açık olduğunu mahallenin durumu, neyin yapılacağını oyuncu belirler.
+1. **Barınma:** evler. Başta mahallede sadece evler var.
+2. **İş ve yiyecek:** market, kuyu, mahalle işyerleri.
+3. **Eğitim:** okul.
+4. **Mimar:** mahallenin kendi mimarı; binalar gelişir, sokaklar düzelip güzelleşir.
+- Sonra eklenebilir: ibadet, eğlence.
+
+### İki seviye meslek
+- **Muhtarın meslekleri (şehrin geneline hizmet eder):** Mühendis, Çiftçi, Oduncu, Taş ustası (madencinin yerine). Bugünkü emir mantığıyla çalışırlar, her mahalleye ve binaya giderler. Aşama büyüdükçe liste uzar. Asker şimdilik yok.
+- **Mahallenin meslekleri (sadece o mahalleye hizmet eder):** mimar, market çalışanları, öğretmen, sucu…
+- Hepsi insan olarak bir mahallede oturur. Şehre fazla adam almak mahallenin işyerlerini boş bırakır; denge oyuncunun işi.
+- Mahalleli evden işe yürür, akşam döner. Mahalleler arası bu gidip gelme sokakları canlı tutar.
+
+### Binaların içi: rollü çalışma yerleri
+- Market: 1 satıcı + 1 taşıyıcı (tarladan mal getirir).
+- Okul: 1 öğretmen, sonra 2.
+- Kuyu: 1 sucu, evlere su taşır.
+
+### Mahalle kartı
+Mahalleye dokununca açılır, iki bölüm:
+- **Bina kartı:** mahallenin basamağı ve açık binalar. Seçilen binayı muhtarın mühendisleri yapar.
+- **Çalışan kartı:** işyerleri ve rolleri, her rolde − / + düğmesi, en altta boştaki kişi sayısı. Ayar bir kez yapılır ve kalır; yeni gelenler oranlara göre dağılır.
+- Şehrin geneline ait işler (ana binanın büyümesi, mahalleler arası yollar, ticaret) ana binada.
+- Mahalleler kararlara göre kimlik kazanabilir (aile mahallesi, zanaatkâr mahallesi); adı ve görüntüsü değişir.
+
+### Yaşayan sokaklar
+- Kadınlar ve erkekler kuyuya, pazara, işe gidip gelir; çocuklar ev önlerinde ve meydanda oynar.
+- Gece–gündüz: akşam herkes evine döner, sokaklar boşalır.
+
+### Yol haritası
+1. **Düzen:** yollar/patikalar, yola dizilen evler, ilk mahalle (sadece barınma). Rastgele yerleşim kalkar.
+2. **Yaşayan sokaklar:** sivil yürüyüşçüler, çocuklar, gece–gündüz.
+3. **Mahalleler ve ihtiyaçlar:** mahalle kartı (bina + çalışan), basamaklar, market/kuyu/okul, yeni mahalle açılması.
+4. **Aşamalar:** ana binanın büyümesi, aşamayla açılan meslekler, mahalle mimarı.
+5. Ticaret (odun fazlası → taş), mevsimler, olaylar.
+6. En son askeri işler.
+
+## Oyun kuralları (şu anki sürüm, yeni vizyonla değişecek)
 
 - 10 kişiyle başlar, sırada beklerler. Kapıdan her **5 sn**'de bir kişi seçili meslekle çıkar.
 - Yemek varsa (15) ve boş yer varsa nüfus artar. Yemek bitince sadece artış durur. Kişi başı yemek tüketimi 1/18 sn.
@@ -69,5 +130,5 @@ Geliştirmeler çalışan sayısı × süre ile ilerler: Testere 200/400, Kazma 
 
 ## Açık konular
 
-- Denge: testere sonrası odun çok birikiyor, darboğaz taş.
-- Konuşulan ama yapılmayan fikirler: mevsimler, olay kartları (göçmen, tüccar), asker toplanma noktası.
+- Denge: odun 10 dakikada ~1900'e birikiyor, taş 30'un altında kalıyor. Ölçüm: testere bunun sebebi değil (testeresiz de aynı), sebep odunun harcanacak yeri olmaması. Testere kalıyor; çözüm yol haritasının 5. adımında (ticaret) ve yeni binaların maliyetlerinde.
+- Asker toplanma noktası: askeri işler sona kaldı.
