@@ -28,7 +28,7 @@ function cluster(a,r,count,fn,spread){
 }
 function mkB(type,x,y,built,door){
   const s=BSPEC[type];
-  const b={type,x,y,door:door||'r',w:s.w,h:s.h,maxHp:s.hp,hp:built?s.hp:s.hp*.3,built,progress:built?1:0,need:s.time,workers:[],dead:false,hitT:0,level:1,age:0};
+  const b={type,x,y,door:door||'r',v:Math.random(),w:s.w,h:s.h,maxHp:s.hp,hp:built?s.hp:s.hp*.3,built,progress:built?1:0,need:s.time,workers:[],dead:false,hitT:0,level:1,age:0};
   markOcc(x,y,b.w,b.h,3);return b;
 }
 function newGame(){

@@ -9,7 +9,7 @@ function saveGame(){
     mah:G.mah,roads:G.wear.reduce((a,w,i)=>(w>=1||G.road[i])?(a.push([i,G.road[i],Math.round(w),G.keep[i]]),a):a,[]),
     raids:G.raids,orders:G.orders,oneShot:G.oneShot,tech:G.tech,prog:G.prog,fort:G.fort,
     trees:G.trees.map(t=>[t.x,t.y,t.wood,r2(t.v),t.pine?1:0,t.sap==null?-1:r2(t.sap)]),rocks:G.rocks.map(r=>[r.x,r.y,r.stone,r2(r.v)]),
-    blds:G.blds.map(b=>({type:b.type,x:b.x,y:b.y,w:b.w,h:b.h,hp:r2(b.hp),maxHp:b.maxHp,built:b.built,progress:r2(b.progress),need:b.need,level:b.level||1,age:r2(b.age||0),door:b.door||'r',m:b.m??null})),
+    blds:G.blds.map(b=>({type:b.type,x:b.x,y:b.y,w:b.w,h:b.h,hp:r2(b.hp),maxHp:b.maxHp,built:b.built,progress:r2(b.progress),need:b.need,level:b.level||1,age:r2(b.age||0),door:b.door||'r',m:b.m??null,v:b.v!=null?r2(b.v):null})),
     vill:G.vill.map(v=>({id:v.id,name:v.name,job:v.job,x:r2(v.x),y:r2(v.y),hp:r2(v.hp),carry:v.carry,ct:v.ct,home:v.home,sleep:v.sleep?1:0})),
     kids:G.kids.map(k=>({id:k.id,x:r2(k.x),y:r2(k.y),home:k.home,age:r2(k.age),c:k.c,sleep:k.sleep?1:0})),
     foes:G.foes.map(e=>({kind:e.kind,x:r2(e.x),y:r2(e.y),hp:r2(e.hp),maxHp:e.maxHp,sp:e.sp,dmg:e.dmg,rate:e.rate})),

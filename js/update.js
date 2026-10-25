@@ -27,7 +27,7 @@ function update(dt){
   for(const b of G.blds){if(b.hitT>0)b.hitT-=dt;
     if((b.type==='house'||b.type==='farm')&&b.built&&b.level<3&&b.hp>=b.maxHp){b.age+=dt;const T=b.type==='house'?HLV:FLV;
       if(b.age>=T[b.level-1].next){b.age=0;b.level++;const L=T[b.level-1];b.hp+=L.hp-b.maxHp;b.maxHp=L.hp;
-        floatAt(b.x+b.w/2,b.y+b.h/2,b.type==='house'?`Ev ${b.level}. seviye · ${L.cap} kişilik`:`Tarla ${b.level}. seviye · ${L.work} çiftçi`,'#e3b54f');
+        floatAt(b.x+b.w/2,b.y+b.h/2,b.type==='house'?`${HNAME[b.level-2]} ${HNAME[b.level-1].toLowerCase()} oldu · ${L.cap} kişilik`:`Tarla ${b.level}. seviye · ${L.work} çiftçi`,'#e3b54f');
         hint('lvl','Bir bina gelişti. Evler ve tarlalar hasarsız kaldıkça zamanla büyür.',9999);}}}
 
   for(const t of G.trees)if(t.sap!=null){t.sap+=dt/60;if(t.sap>=1){t.sap=null;t.wood=30;}}

@@ -124,7 +124,8 @@ Geliştirmeler çalışan sayısı × süre ile ilerler: Testere 200/400, Kazma 
 
 ### Binalar
 
-- Ev 30 odun + 15 taş. Hasarsız kaldıkça büyür: 5 → 7 (90 sn) → 10 kişi (150 sn).
+- Ev 30 odun + 15 taş. Hasarsız kaldıkça tipi değişir: **Kulübe** 5 kişi → **Ev** 7 kişi (4 dk) → **Konak** 10 kişi (8 dk daha).
+- Görünüş: kulübe küçük, alçak, kerpiç duvar ve saman çatı; ev kiremit çatılı ve bacalı; konak arsanın tamamı, iki kat, bayraklı. Her evin çatı yönü (beşik çatının mahyası x ya da y), duvar ve çatı rengi, arsadaki küçük kayması rastgele (`b.v`), bu yüzden mahalle tek tip görünmez.
 - Tarla 20 odun. 2 → 3 → 4 çiftçi, aynı süreler. "Toprağı sür" her turda +12 sn gelişim verir.
 - Kule 20 odun + 30 taş. 6,5 kare menzil, 1,2 sn'de bir 10 hasar.
 

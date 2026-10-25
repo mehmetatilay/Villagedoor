@@ -46,28 +46,49 @@ function drawMain(b){
   ctx.restore();
   if(b.hp<b.maxHp){const c=P(b.x+b.w/2,b.y+b.h/2,44+32+36);bar(c[0],c[1],46*Z,b.hp/b.maxHp);}
 }
+// Beşik çatı: mahya x ya da y yönünde uzanır; evlere farklı açılar verir.
+function gable(b,h,peak,axis,cb,cf,cg){
+  const e=.16,x0=b.x-e,y0=b.y-e,x1=b.x+b.w+e,y1=b.y+b.h+e,xm=b.x+b.w/2,ym=b.y+b.h/2;
+  const A=P(x0,y0,h),B=P(x1,y0,h),C=P(x1,y1,h),D=P(x0,y1,h);
+  let R1,R2;
+  if(axis==='x'){R1=P(x0,ym,h+peak);R2=P(x1,ym,h+peak);poly([A,B,R2,R1],cb);poly([D,C,R2,R1],cf);poly([B,C,R2],cg);}
+  else{R1=P(xm,y0,h+peak);R2=P(xm,y1,h+peak);poly([A,D,R2,R1],cb);poly([B,C,R2,R1],cf);poly([D,C,R2],cg);}
+  ctx.strokeStyle='rgba(0,0,0,.28)';ctx.lineWidth=Math.max(1,Z);ln(R1[0],R1[1],R2[0],R2[1]);
+  return R2;
+}
+const HWALL=['#c1aa80','#cdb892','#b89f78','#d6c7a4','#bfa58a'];
+const HROOF=[['#8a7038','#c4a55a','#a88a4a'],['#7d6530','#b8994e','#9a7e40']]; // saman
+const HTILE=[['#5e2c1e','#9a4a30','#7c3a26'],['#5a2420','#9c3e34','#7a302a'],['#5b3424','#94603e','#784a30'],['#4e3a2e','#7d6352','#665040']];
+const frac=n=>n-Math.floor(n);
+const houseVar=b=>b.v!=null?b.v:frac(Math.sin(b.x*12.9898+b.y*78.233)*43758.5453);
 function drawHouse(b){
   ctx.save();if(b.hitT>0)ctx.translate((Math.random()-.5)*3,0);
-  shadowFoot(b);
-  const lv=b.level||1,Hh=[22,28,38][lv-1];
-  box(b,Hh,'#a88f68','#d0ba90','#c1aa80');
+  const lv=b.level||1,v=houseVar(b),axis=v<.5?'x':'y';
+  // seviyeye göre gövde: kulübe küçük ve alçak, ev orta, konak arsanın tamamı
+  const ins=[.36,.16,0][lv-1],jx=(frac(v*31)-.5)*ins*.8,jy=(frac(v*57)-.5)*ins*.8;
+  const k={x:b.x+ins+jx,y:b.y+ins+jy,w:b.w-2*ins,h:b.h-2*ins};
+  const Hh=[13,22,34][lv-1];
+  shadowFoot(k);
+  const wall=lv===1?['#9c7f58','#c2a57a','#b39466'][Math.floor(v*7)%3]:HWALL[Math.floor(v*11)%HWALL.length];
+  box(k,Hh,mix(wall,'#000000',.22),mix(wall,'#ffffff',.08),wall);
   if(lv===3){ctx.strokeStyle='rgba(80,55,30,.55)';ctx.lineWidth=Math.max(1,1.4*Z);
-    let a=faceL(b,0,20),c=faceL(b,1,20);ln(a[0],a[1],c[0],c[1]);a=faceR(b,0,20);c=faceR(b,1,20);ln(a[0],a[1],c[0],c[1]);
-    quadOnFace(faceL,b,.2,.4,25,33,'#2b221c');quadOnFace(faceL,b,.23,.37,26,32,'#e6b25a');
-    quadOnFace(faceL,b,.6,.8,25,33,'#2b221c');quadOnFace(faceL,b,.63,.77,26,32,'#e6b25a');
-    quadOnFace(faceR,b,.25,.45,25,33,'#2b221c');quadOnFace(faceR,b,.28,.42,26,32,'#e6b25a');}
+    let a=faceL(k,0,18),c=faceL(k,1,18);ln(a[0],a[1],c[0],c[1]);a=faceR(k,0,18);c=faceR(k,1,18);ln(a[0],a[1],c[0],c[1]);
+    quadOnFace(faceL,k,.2,.4,22,30,'#2b221c');quadOnFace(faceL,k,.23,.37,23,29,'#e6b25a');
+    quadOnFace(faceL,k,.6,.8,22,30,'#2b221c');quadOnFace(faceL,k,.63,.77,23,29,'#e6b25a');
+    quadOnFace(faceR,k,.25,.45,22,30,'#2b221c');quadOnFace(faceR,k,.28,.42,23,29,'#e6b25a');}
   const fd=b.door==='l'?faceL:faceR,fw=b.door==='l'?faceR:faceL;
-  quadOnFace(fd,b,.42,.66,0,14,'#4a301c');
-  quadOnFace(fw,b,.35,.62,9,16,'#2b221c');quadOnFace(fw,b,.38,.59,10,15,'#e6b25a');
+  quadOnFace(fd,k,.4,.64,0,lv===1?10:14,'#4a301c');
+  if(lv>1){quadOnFace(fw,k,.35,.62,9,16,'#2b221c');quadOnFace(fw,k,.38,.59,10,15,'#e6b25a');}
+  else quadOnFace(fw,k,.4,.58,6,10,'#2b221c');
   ctx.strokeStyle='rgba(80,55,30,.5)';ctx.lineWidth=Math.max(1,Z);
-  let a=faceL(b,0,0),c=faceL(b,0,Hh);ln(a[0],a[1],c[0],c[1]);a=faceR(b,1,0);c=faceR(b,1,Hh);ln(a[0],a[1],c[0],c[1]);
-  const rc=[['#553621','#6e4629','#8a5a33'],['#5e2c1e','#7c3a26','#9a4a30'],['#5a2420','#7a302a','#9c3e34']][lv-1];
-  const T=roof(b,Hh,20+(lv-1)*3,rc[0],rc[1],rc[2]);
-  if(lv>=2){const ch=P(b.x+b.w*.32,b.y+b.h*.3,Hh+14);rr(ch[0]-2.6*Z,ch[1],5.2*Z,12*Z,1*Z,'#7d6a55');ctx.fillStyle='#5b4a3a';ctx.fillRect(ch[0]-3.2*Z,ch[1],6.4*Z,2*Z);
-    for(let i=0;i<3;i++){const k=((G.t*.45+i/3+b.x*.13)%1);ctx.globalAlpha=(1-k)*.45;circ(ch[0]+k*6*Z,ch[1]-4*Z-k*18*Z,(2+k*4)*Z,'#d8d4cc');}ctx.globalAlpha=1;}
+  let a=faceL(k,0,0),c=faceL(k,0,Hh);ln(a[0],a[1],c[0],c[1]);a=faceR(k,1,0);c=faceR(k,1,Hh);ln(a[0],a[1],c[0],c[1]);
+  const rc=lv===1?HROOF[Math.floor(v*5)%HROOF.length]:HTILE[Math.floor(v*13)%HTILE.length];
+  const T=lv===3&&v>.75?roof(k,Hh,24,rc[0],rc[2],rc[1]):gable(k,Hh,lv===1?13:[0,17,21][lv-1],axis,rc[0],rc[1],rc[2]);
+  if(lv>=2){const ch=P(k.x+k.w*.3,k.y+k.h*.3,Hh+12);rr(ch[0]-2.6*Z,ch[1],5.2*Z,12*Z,1*Z,'#7d6a55');ctx.fillStyle='#5b4a3a';ctx.fillRect(ch[0]-3.2*Z,ch[1],6.4*Z,2*Z);
+    for(let i=0;i<3;i++){const q=((G.t*.45+i/3+b.x*.13)%1);ctx.globalAlpha=(1-q)*.45;circ(ch[0]+q*6*Z,ch[1]-4*Z-q*18*Z,(2+q*4)*Z,'#d8d4cc');}ctx.globalAlpha=1;}
   if(lv===3){ctx.strokeStyle='#3a2a1e';ctx.lineWidth=Math.max(1,1.3*Z);ln(T[0],T[1],T[0],T[1]-14*Z);poly([[T[0],T[1]-14*Z],[T[0]+9*Z,T[1]-11.5*Z],[T[0],T[1]-9*Z]],'#d9a441');}
   ctx.restore();
-  if(b.hp<b.maxHp){const c=P(b.x+b.w/2,b.y+b.h/2,Hh+36);bar(c[0],c[1],32*Z,b.hp/b.maxHp);}
+  if(b.hp<b.maxHp){const c=P(b.x+b.w/2,b.y+b.h/2,Hh+30);bar(c[0],c[1],32*Z,b.hp/b.maxHp);}
 }
 function drawSite(b){
   poly([P(b.x,b.y,0),P(b.x+b.w,b.y,0),P(b.x+b.w,b.y+b.h,0),P(b.x,b.y+b.h,0)],'rgba(122,96,60,.75)');

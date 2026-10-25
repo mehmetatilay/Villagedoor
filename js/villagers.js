@@ -153,7 +153,7 @@ function engineer(v,dt){
     if(!b.built){
       b.progress+=dt/b.need;b.hp=Math.min(b.maxHp,b.hp+b.maxHp*.7*dt/b.need);
       if(b.progress>=1){b.progress=1;b.built=true;b.hp=b.maxHp;
-        floatAt(b.x+b.w/2,b.y+b.h/2,b.type==='house'?'Ev hazır · +5 yer':`${BNAME[b.type]} hazır`,'#e3b54f');
+        floatAt(b.x+b.w/2,b.y+b.h/2,b.type==='house'?'Kulübe hazır · +5 yer':`${BNAME[b.type]} hazır`,'#e3b54f');
         if(GJOB[b.type])toast(b.type==='atolye'?'Mühendis Atölyesi hazır. Atölyeye dokunup mühendislere ne yapacaklarını söyle, diğer meslek binalarını da buradan yaptır.'
           :`${BNAME[b.type]} hazır. Binaya dokunup ${GDAT[GJOB[b.type]]} emir verebilirsin.`);
         v.tgt=null;v.state='seek';}

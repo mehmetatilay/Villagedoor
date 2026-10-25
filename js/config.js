@@ -17,13 +17,14 @@ const JOBS={
 };
 const ORDER=['asker','ciftci','muhendis','oduncu','madenci'];
 const SPAWN=5;
-const HLV=[{cap:5,hp:200,next:90},{cap:7,hp:260,next:150},{cap:10,hp:320,next:0}];
+const HLV=[{cap:5,hp:200,next:240},{cap:7,hp:260,next:480},{cap:10,hp:320,next:0}];
 const FLV=[{work:2,hp:80,next:90},{work:3,hp:110,next:150},{work:4,hp:140,next:0}];
 const FSLOT=[[.55,.6],[1.45,1.4],[1.45,.6],[.55,1.4]];
 const BSPEC={house:{w:2,h:2,hp:200,time:14,wood:30,stone:15},farm:{w:2,h:2,hp:80,time:8,wood:20,stone:0},
   tower:{w:1,h:1,hp:180,time:12,wood:20,stone:30},
   atolye:{w:2,h:2,hp:220,time:10,wood:25,stone:0},kamp:{w:2,h:2,hp:200,time:10,wood:20,stone:5},
   ocak:{w:2,h:2,hp:240,time:12,wood:30,stone:0},ciftlik:{w:2,h:2,hp:200,time:12,wood:25,stone:10},kisla:{w:2,h:2,hp:280,time:14,wood:30,stone:20}};
+const HNAME=['Kulübe','Ev','Konak'];
 const BNAME={house:'Ev',farm:'Tarla',tower:'Kule',atolye:'Mühendis Atölyesi',kamp:'Oduncu Kampı',ocak:'Maden Ocağı',ciftlik:'Çiftlik Evi',kisla:'Kışla',main:'Ana Bina'};
 const GUILD={muhendis:'atolye',oduncu:'kamp',madenci:'ocak',ciftci:'ciftlik',asker:'kisla'};
 const GJOB={atolye:'muhendis',kamp:'oduncu',ocak:'madenci',ciftlik:'ciftci',kisla:'asker'};
