@@ -34,7 +34,7 @@ function mkB(type,x,y,built,door){
 function newGame(){
   uid=0;
   G={seed:(Math.random()*4294967295)>>>0,t:0,res:{food:60,wood:40,stone:15},queue:10,vill:[],foes:[],trees:[],rocks:[],blds:[],job:null,spawnT:SPAWN,birthT:9,
-     wave:0,waveT:120,over:false,needFarm:false,needFarmPrev:false,floaters:[],occ:new Uint8Array(N*N),road:new Uint8Array(N*N),keep:new Uint8Array(N*N),wear:new Float32Array(N*N),mah:[],kills:0,maxPop:10,hints:{},names:NAMES.slice().sort(()=>Math.random()-.5),...freshMeta()};
+     wave:0,waveT:120,over:false,needFarm:false,needFarmPrev:false,floaters:[],occ:new Uint8Array(N*N),road:new Uint8Array(N*N),keep:new Uint8Array(N*N),wear:new Float32Array(N*N),mah:[],kids:[],grown:0,kills:0,maxPop:10,hints:{},names:NAMES.slice().sort(()=>Math.random()-.5),...freshMeta()};
   const main={type:'main',...MAIN,hp:600,maxHp:600,built:true,progress:1,workers:[],dead:false,hitT:0};
   G.blds.push(main);G.main=main;markOcc(MAIN.x,MAIN.y,MAIN.w,MAIN.h,3);
   markOcc(MAIN.x+MAIN.w,MAIN.y+1,5,2,4); // kapı önü ve sıra alanı
@@ -52,7 +52,7 @@ function newGame(){
   foundDistrict();
   for(let i=0;i<2;i++){const s=findSpot(2,2,3.6,8);if(s){const b=mkB('farm',s.x,s.y,true);G.blds.push(b);const f=doorTile(b);linkToRoad(f.x,f.y);}}
   ground=buildGround();
-  Z=W<600?0.95:1.15;centerOn(CX+1,CY+1);
+  Z=W<600?0.7:0.85;centerOn(CX+1,CY+1);
   closeSheet();
 }
 

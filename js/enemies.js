@@ -8,7 +8,7 @@ function mkFoe(kind,x,y,n){
 }
 function spawnWave(){
   const n=++G.wave,wolves=n<=3?n+1:2+Math.floor(n/3),raiders=n<3?0:(n-2)+Math.floor(n/4);
-  const side=Math.floor(Math.random()*4),r=12+Math.random()*24;
+  const side=Math.floor(Math.random()*4),r=12+Math.random()*(N-24);
   const base=[{x:1.5,y:r},{x:r,y:1.5},{x:N-1.5,y:r},{x:r,y:N-1.5}][side];
   const j=()=>(Math.random()-.5)*3;
   for(let i=0;i<wolves;i++)G.foes.push(mkFoe('wolf',clamp(base.x+j(),1,N-1),clamp(base.y+j(),1,N-1),n));
@@ -18,8 +18,8 @@ function spawnWave(){
 }
 function pickTarget(e){
   let best=null,bd=1e9;
-  if(e.kind==='wolf'){for(const v of G.vill){if(v.dead||v.gone||v.inside)continue;const d=dist(e,v);if(d<18&&d<bd){bd=d;best=v;}}return best;}
-  for(const v of G.vill){if(v.dead||v.gone||v.inside)continue;const d=dist(e,v),lim=v.job==='asker'?3:1.6;if(d<lim&&d<bd){bd=d;best=v;}}
+  if(e.kind==='wolf'){for(const v of G.vill){if(v.dead||v.gone||v.inside||v.sleep)continue;const d=dist(e,v);if(d<18&&d<bd){bd=d;best=v;}}return best;}
+  for(const v of G.vill){if(v.dead||v.gone||v.inside||v.sleep)continue;const d=dist(e,v),lim=v.job==='asker'?3:1.6;if(d<lim&&d<bd){bd=d;best=v;}}
   if(best)return best;
   for(const b of G.blds){if(b.dead||b.type==='farm')continue;const d=Math.hypot(clamp(e.x,b.x,b.x+b.w)-e.x,clamp(e.y,b.y,b.y+b.h)-e.y);if(d<bd){bd=d;best=b;}}
   return best;
@@ -28,7 +28,7 @@ function updateE(e,dt){
   e.atk-=dt;if(e.hitT>0)e.hitT-=dt;e.moving=false;
   e.rt-=dt;if(e.rt<=0){e.rt=.8;e.tgt=pickTarget(e);}
   const t=e.tgt;
-  if(t&&!t.dead&&!t.gone&&!t.inside){
+  if(t&&!t.dead&&!t.gone&&!t.inside&&!t.sleep){
     let tx,ty,range;
     if(t.type){tx=clamp(e.x,t.x,t.x+t.w);ty=clamp(e.y,t.y,t.y+t.h);range=.35;}else{tx=t.x;ty=t.y;range=.5;}
     const d=Math.hypot(tx-e.x,ty-e.y);

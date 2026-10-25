@@ -11,6 +11,7 @@ Kaynak kod: GitHub `mehmetatilay/Villagedoor` (ana dal `main`). Oynanan sürüm:
 | `css/style.css` | Tüm stiller. Renk ve yazı tipleri `:root` içinde. Tek koyu tema (bilerek). |
 | `js/config.js` | Sabitler: meslekler, bina maliyetleri (`BSPEC`), emirler (`ORD`), geliştirmeler (`TECH`), seviyeler (`HLV`, `FLV`). Ortak durum değişkenleri (`G`, kamera). |
 | `js/world.js` | Harita üretimi, zemin çizimi, kamera dönüşümleri, `newGame`, `freshMeta`. |
+| `js/life.js` | Gündelik hayat: gece–gündüz saati, evler ve oturanlar, köylünün akşam eve dönmesi, çocuklar, gece çizimi. |
 | `js/town.js` | Yollar (aşınma → patika → toprak yol) ve mahalleler: kuruluş, ev arsası seçimi, yol çizimi. |
 | `js/save.js` | `localStorage` kaydı (`koy-kapisi-kayit-v1`), yükleme ve eski kayıtlarla uyum. |
 | `js/villagers.js` | Köylü davranışları: toplama, fidan dikme, araştırma, tarım, inşaat, güçlendirme, av, savaş. Emir sistemi (`order()`). |
@@ -80,7 +81,7 @@ Mahalleye dokununca açılır, iki bölüm:
 
 ### Yol haritası
 1. **Düzen:** yollar/patikalar, yola dizilen evler, ilk mahalle (sadece barınma). Rastgele yerleşim kalkar. ✅ Yapıldı (bkz. "Yollar ve mahalleler").
-2. **Yaşayan sokaklar:** sivil yürüyüşçüler, çocuklar, gece–gündüz.
+2. **Yaşayan sokaklar:** sivil yürüyüşçüler, çocuklar, gece–gündüz. ✅ Yapıldı (bkz. "Gece, gündüz ve evler").
 3. **Mahalleler ve ihtiyaçlar:** mahalle kartı (bina + çalışan), basamaklar, market/kuyu/okul, yeni mahalle açılması.
 4. **Aşamalar:** ana binanın büyümesi, aşamayla açılan meslekler, mahalle mimarı.
 5. Ticaret (odun fazlası → taş), mevsimler, olaylar.
@@ -88,8 +89,9 @@ Mahalleye dokununca açılır, iki bölüm:
 
 ## Oyun kuralları (şu anki sürüm, yeni vizyonla değişecek)
 
-- 10 kişiyle başlar, sırada beklerler. Kapıdan her **5 sn**'de bir kişi seçili meslekle çıkar.
-- Yemek varsa (15) ve boş yer varsa nüfus artar. Yemek bitince sadece artış durur. Kişi başı yemek tüketimi 1/18 sn.
+- Harita 64×64 kare (önceden 48; eski kayıtlar ortaya kaydırılarak yüklenir). Açılış yakınlığı telefonda 0,7, en uzak 0,3.
+- 10 kişiyle başlar, sırada beklerler. Kapıdan her **5 sn**'de bir kişi seçili meslekle çıkar (gece çıkmaz).
+- Yemek varsa (15) ve boş yer varsa nüfus artar: boş yatağı olan bir evde **çocuk** doğar (yoksa ana binada). Yemek bitince sadece artış durur. Kişi başı yemek tüketimi gündüz 1/18 sn, gece yarısı kadar.
 - **Ana bina yıkılırsa oyun biter.** Saldırılar varsayılan **kapalı**, duraklat menüsünden açılır.
 - Dalgalar: ilk 120 sn, sonra 93 − 3×dalga sn (en az 57). Önce kurtlar, 3. dalgadan sonra akıncılar.
 - Meslek binası yoksa meslek temel işini yapar; bina diğer emirleri açar. İşçiler topladığını en yakın teslim noktasına (kendi binası ya da ana bina) bırakır.
@@ -105,6 +107,12 @@ Mahalleye dokununca açılır, iki bölüm:
 | Asker | Kışla (30 odun, 20 taş) | Nöbet tut · Talim yap · Avlan |
 
 Geliştirmeler çalışan sayısı × süre ile ilerler: Testere 200/400, Kazma 160/320, Saban 160/320, Talim 120/240/360. Her seviye %40 hız (talimde %25 güç).
+
+### Gece, gündüz ve evler
+- Bir gün **5 dakika**. Oyun 06:00'da başlar. 21:30–05:00 gece: köylü elindekini teslim eder, evine yürür ve uyur; sabah evinin kapısından çıkıp işine döner. Herkes aynı anda çıkmasın diye kişi başı birkaç saniye kayma var. Nöbetteki askerler gece de dışarıda.
+- 19:30'dan itibaren ekran kararır, 22:30'da tam gece; dolu evlerde ve meslek binalarında ışık yanar. Üst çubukta saat: "2. gün · Öğle".
+- Herkesin bir evi var: kapıdan çıkan köylü boş yatağı olan eve yerleşir, yoksa ana binada kalır; boş ev çıkınca taşınır. Ev kartında kaç kişinin oturduğu, köylü kartında evinin hangi mahallede olduğu yazar.
+- Çocuklar evin önünde ve mahalle meydanında oynar, gece evlerine girer. **2 dakikada** büyür, ana binaya yürüyüp kapıdaki sıraya girer.
 
 ### Yollar ve mahalleler
 - Köylünün bastığı kare aşınır. 12 sn yürünen kare **patika**, 70 sn yürünen **toprak yol** olur. Patikada %12, yolda %30 daha hızlı yürünür. Patika ve yol kalıcı; patikaya dönmemiş aşınma yavaşça silinir.

@@ -55,7 +55,7 @@ function houseSpot(m){
 }
 function foundDistrict(){
   let best=null,bs=-1e9;
-  for(let a=0;a<16;a++)for(const r of[8,10,12,14,16]){
+  for(let a=0;a<16;a++)for(const r of[8,10,12,14,16,18,20,22]){
     const ang=a/16*Math.PI*2,x=CX+Math.cos(ang)*r,y=CY+Math.sin(ang)*r;
     if(x<MR+1||y<MR+1||x>N-MR-1||y>N-MR-1)continue;
     if(G.mah.some(m=>Math.hypot(m.x-x,m.y-y)<MR*2+1))continue;

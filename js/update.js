@@ -3,19 +3,23 @@
 function update(dt){
   G.t+=dt;
   const p=pop();
-  G.res.food=Math.max(0,G.res.food-p*dt/18);
+  G.res.food=Math.max(0,G.res.food-p*dt/(isNight()?36:18)); // uyuyan az yer
   G.birthT-=dt;
   if(G.birthT<=0){G.birthT=9;
-    if(p<cap()&&G.res.food>=15){G.res.food-=15;G.queue++;floatAt(DOOR.x+.5,DOOR.y,'+1 köylü','#efe6d1');}}
-  if(G.job&&G.queue>0){G.spawnT-=dt;if(G.spawnT<=0){G.spawnT=SPAWN;G.queue--;G.vill.push(mkV(G.job));}}
+    if(p<cap()&&G.res.food>=15){G.res.food-=15;bornKid();}}
+  if(G.job&&G.queue>0&&!isNight()){G.spawnT-=dt;if(G.spawnT<=0){G.spawnT=SPAWN;G.queue--;const v=mkV(G.job);giveHome(v);G.vill.push(v);}}
   else G.spawnT=SPAWN;
 
   G.needFarmPrev=G.needFarm;G.needFarm=false;
   let si=0;for(const v of G.vill)if(v.job==='asker'&&v.state!=='recall')v.sidx=si++;G._sold=si;
   for(const v of G.vill){updateV(v,dt);if(v.moving)wearStep(v,dt);}
   fadeWear(dt);
+  for(const k of G.kids)updateKid(k,dt);
   for(const e of G.foes)updateE(e,dt);
   G.vill=G.vill.filter(v=>!v.dead&&!v.gone);
+  if(G.kids.some(k=>k.gone))G.kids=G.kids.filter(k=>!k.gone);
+  G.homeT=(G.homeT||0)-dt;if(G.homeT<=0){G.homeT=2;rehome();}
+  if(darkness()>.3)hint('night','Akşam oldu. Köylüler evlerine dönüyor, sabah işlerine çıkacaklar.',1e9);
   G.foes=G.foes.filter(e=>!e.dead);
   if(G.trees.some(t=>t.dead))G.trees=G.trees.filter(t=>!t.dead);
   if(G.rocks.some(r=>r.dead))G.rocks=G.rocks.filter(r=>!r.dead);

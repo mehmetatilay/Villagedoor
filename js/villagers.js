@@ -1,6 +1,6 @@
 "use strict";
 /* ---------- helpers ---------- */
-const pop=()=>G.vill.length+G.queue;
+const pop=()=>G.vill.length+G.queue+G.kids.length;
 const cap=()=>10+G.blds.reduce((s,b)=>s+(b.type==='house'&&b.built&&!b.dead?HLV[b.level-1].cap:0),0);
 function floatAt(x,y,txt,col){G.floaters.push({x,y,txt,col:col||'#efe6d1',t:0});}
 function hint(key,msg,cool,kind){if(G.t>=(G.hints[key]??-1)){G.hints[key]=G.t+cool;toast(msg,kind);}}
@@ -202,8 +202,12 @@ function updateV(v,dt){
   v.moving=false;v.lastHit+=dt;
   if(v.lastHit>4&&v.hp<v.maxHp&&v.job!=='asker')v.hp=Math.min(v.maxHp,v.hp+dt*2);
   if(v.state==='recall'){if(moveTo(v,DOOR.x,DOOR.y,dt,v.sp*1.15)){deposit(v);v.gone=true;G.queue++;}return;}
-  if(v.job!=='asker'){
+  if(v.job!=='asker'||order('asker')!=='nobet'){
     if(v.inside){if(!G.foes.some(e=>Math.hypot(e.x-CX,e.y-CY)<10)){v.inside=false;v.flee=false;v.state='seek';v.x=DOOR.x;v.y=DOOR.y;}return;}
+    if(nightFor(v)){if(!v.flee){toBed(v,dt);return;}}
+    else if(v.sleep||v.bed)wake(v);
+  }
+  if(v.job!=='asker'){
     if(!v.flee&&G.foes.some(e=>dist(e,v)<3.2)){v.flee=true;release(v);}
     if(v.flee){if(moveTo(v,DOOR.x,DOOR.y,dt,v.sp*1.25)){deposit(v);v.inside=true;}return;}
   }

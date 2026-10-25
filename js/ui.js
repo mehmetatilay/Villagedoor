@@ -11,7 +11,7 @@ function hpCls(fr){return fr>.6?'':fr>.3?'mid':'bad';}
 function openVill(v){
   sheetKind='vill';sheetRef=v;
   sheet.innerHTML=`<div class="sh-head"><div><div class="eyebrow" style="color:${JOBS[v.job].renk}">${JOBS[v.job].ad}</div><h2>${v.name}</h2></div><button class="x" type="button" data-close>Kapat</button></div>
-  <div class="hp"><i id="vHp"></i></div><div class="meta"><span id="vHpT"></span><span></span></div>
+  <div class="hp"><i id="vHp"></i></div><div class="meta"><span id="vHpT"></span><span id="vHome"></span></div>
   <p class="note" id="vState"></p>
   <button class="big" type="button" id="vBack" data-back>Ana binaya geri çağır</button>`;
   showSheet();
@@ -40,6 +40,7 @@ function updSheet(){
     if(v.gone){closeSheet();return;}
     const fr=v.hp/v.maxHp,hp=$('vHp');hp.style.width=fr*100+'%';hp.className=hpCls(fr);
     setT('vHpT',`Can ${Math.ceil(v.hp)}/${v.maxHp}`);setT('vState',stateText(v));
+    const hb=homeOf(v),hm=mahOf(hb);setT('vHome',hb===G.main?'Evi: ana bina':`Evi: ${hm?hm.name:'köy'}`);
     const bb=$('vBack');bb.disabled=v.state==='recall';setT('vBack',v.state==='recall'?'Ana binaya dönüyor…':'Ana binaya geri çağır');
   }else if(sheetKind==='bld'){
     const b=sheetRef;if(!b||b.dead){closeSheet();return;}
@@ -48,7 +49,8 @@ function updSheet(){
     setT('bHpT',b.built?`Can ${Math.ceil(b.hp)}/${b.maxHp}`:`İnşaat %${Math.floor(b.progress*100)}`);
     if(b.type==='house'&&b.built){const L=HLV[b.level-1];setT('bHpT',`Can ${Math.ceil(b.hp)}/${b.maxHp}`);
       const lvTxt=b.level<3?(b.hp<b.maxHp?` Hasarlı, tamir edilene kadar gelişmiyor.`:` ${b.level+1}. seviyeye ${fmt(L.next-b.age)} kaldı (${HLV[b.level].cap} kişilik).`):' En yüksek seviyede.';
-      setT('bLv',`${b.level}. seviye`);setT('bNote',`${L.cap} kişilik yer sağlıyor.${lvTxt}`);}
+      const rs=residents(b),ks=G.kids.filter(k=>k.home===bkey(b)).length;
+      setT('bLv',`${b.level}. seviye`);setT('bNote',`${rs}/${L.cap} kişi oturuyor${ks?` (${ks} çocuk)`:''}.${lvTxt}`);}
     else if(b.type==='tower')setT('bNote',b.built?'Yaklaşan düşmana ok atar.':'Mühendisler kuleyi yapıyor.');
     else if(GJOB[b.type])setT('bNote',`Mühendisler ${BNAME[b.type].toLowerCase()} yapıyor. Bitince ${GDAT[GJOB[b.type]]} emir verebilirsin.`);
     else setT('bNote',b.type==='house'?'Mühendisler çalışıyor. 30 odun ve 15 taş harcandı, bitince 5 kişilik yer açar.'
@@ -59,6 +61,8 @@ function updSheet(){
 function stateText(v){
   if(v.state==='recall')return'Ana binaya dönüyor. Sıraya girip yeni meslek alacak.';
   if(v.inside)return'Ana binaya sığındı, tehlike geçince işe döner.';
+  if(v.sleep)return'Evinde uyuyor. Sabah işe çıkacak.';
+  if(v.bed)return'Akşam oldu, evine dönüyor.';
   if(v.flee)return'Düşmandan kaçıyor';
   if(v.state==='idle')return v.why||'Bekliyor';
   const j=v.job;
@@ -195,7 +199,8 @@ function hud(dt){
   setT('rFood',Math.floor(G.res.food));setT('rWood',Math.floor(G.res.wood));setT('rStone',Math.floor(G.res.stone));setT('rPop',`${pop()}/${cap()}`);
   $('pFood').classList.toggle('low',G.res.food<15);
   $('wave').hidden=!G.raids;setT('waveT',`Dalga ${G.wave+1} · ${fmt(G.waveT)}`);$('wave').classList.toggle('soon',G.waveT<10);
-  $('toasts').style.top=`calc(env(safe-area-inset-top,0px) + ${G.raids?100:64}px)`;
+  setT('clockT',`${dayNo(G.t)}. gün · ${dayPart()}`);const nt=darkness()>.5;$('clkSun').toggleAttribute('hidden',nt);$('clkMoon').toggleAttribute('hidden',!nt);
+  $('toasts').style.top='calc(env(safe-area-inset-top,0px) + 100px)';
   updDock();
   hudT-=dt;if(hudT<=0){hudT=.2;updSheet();updTray();}
 }

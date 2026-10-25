@@ -3,8 +3,9 @@ const cv=document.getElementById('game'),ctx=cv.getContext('2d');
 const $=id=>document.getElementById(id);
 let W=0,H=0,DPR=1;
 
-const N=48,TW=64,TH=32,HW=TW/2,HH=TH/2,OX=N*HW;
-const MAIN={x:22,y:22,w:3,h:3};
+const N=64,TW=64,TH=32,HW=TW/2,HH=TH/2,OX=N*HW;
+const ZMIN=.3,ZMAX=1.9;
+const MAIN={x:N/2-2,y:N/2-2,w:3,h:3};
 const CX=MAIN.x+MAIN.w/2,CY=MAIN.y+MAIN.h/2;
 const DOOR={x:MAIN.x+MAIN.w+0.4,y:MAIN.y+MAIN.h*0.62};
 const JOBS={

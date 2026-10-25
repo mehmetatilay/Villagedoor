@@ -131,7 +131,7 @@ function tool(kind,hx,hy,ang,f,s){
   ctx.restore();
 }
 function drawPerson(v,col,isFoe){
-  const p=w2s(v.x,v.y),s=Z,f=v.face||1;
+  const p=w2s(v.x,v.y),s=Z*(v.sc||1),f=v.face||1;
   ell(p.x,p.y,6.5*s,2.8*s,'rgba(0,0,0,.28)');
   const st=v.moving?Math.sin(v.walk*11)*2.4*s:0;
   ctx.strokeStyle='#2a221d';ctx.lineWidth=2.2*s;ctx.lineCap='round';
@@ -231,12 +231,14 @@ function render(){
   for(const t of G.trees)if(vis(t.x+.5,t.y+.5))list.push([t.x+t.y+1,drawTree,t]);
   for(const r of G.rocks)if(vis(r.x+.5,r.y+.5))list.push([r.x+r.y+1,drawRock,r]);
   for(const b of G.blds)if(b.type!=='farm')list.push([b.x+b.y+(b.w+b.h)/2,drawBld,b]);
-  for(const v of G.vill)if(!v.inside&&vis(v.x,v.y))list.push([v.x+v.y,drawVill,v]);
+  for(const v of G.vill)if(!v.inside&&!v.sleep&&vis(v.x,v.y))list.push([v.x+v.y,drawVill,v]);
+  for(const k of G.kids)if(!k.sleep&&vis(k.x,k.y))list.push([k.x+k.y,drawKid,k]);
   for(const e of G.foes)if(vis(e.x,e.y))list.push([e.x+e.y,drawFoe,e]);
   const qn=Math.min(G.queue,8);
   for(let i=0;i<qn;i++){const q={x:DOOR.x+.5+i*.42,y:DOOR.y+.1,job:'none',hp:1,maxHp:1,walk:0,face:-1,queue:true,id:i};list.push([q.x+q.y,drawVill,q]);}
   list.sort((a,b)=>a[0]-b[0]);
   for(const[,fn,o]of list)fn(o);
+  drawNight();
   if(G.queue>8){const p=w2s(DOOR.x+.5+8*.42,DOOR.y+.1);label(`+${G.queue-8}`,p.x+4*Z,p.y-12*Z,'#efe6d1',12);}
   if(G.job&&G.queue>0){const p=w2s(DOOR.x,DOOR.y),cy=p.y-34*Z,r=7*Z+2,fr=1-G.spawnT/SPAWN;
     circ(p.x,cy,r+2.5,'rgba(12,16,14,.75)');ctx.strokeStyle=JOBS[G.job].renk;ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,cy,r,-Math.PI/2,-Math.PI/2+fr*Math.PI*2);ctx.stroke();}
